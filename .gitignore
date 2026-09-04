@@ -16,3 +16,7 @@ build/
 .vscode/
 *.log
 pgdata/
+
+# Frontend dependencies
+web/node_modules/
+web/.next/
