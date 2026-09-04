@@ -8,6 +8,7 @@ export function ExperimentControlPanel({ experiment, loading, onAction, error }:
   return (
     <section className="experiment-control" aria-labelledby="experiment-control-title">
       <div className="experiment-control__header"><div><span className="intel-label">EXPERIMENT CONTROL / EXPLICIT ACTION</span><h3 id="experiment-control-title">Lifecycle gate</h3></div><StatusBadge status={status} /></div>
+      {experiment.action_type.startsWith("razorpay_") && <div className="razorpay-marker razorpay-marker--dark">RAZORPAY TEST MODE / V1 EXECUTION BOUNDARY</div>}
       {error && <p className="experiment-control__error" role="alert">{error}</p>}
       {status === "awaiting_approval" && <div className="experiment-control__actions"><button type="button" className="phase-button" onClick={() => onAction("approve")} disabled={loading !== null}>{loading === "approve" ? "APPROVING EXPERIMENT" : "APPROVE EXPERIMENT"}</button><button type="button" className="control-button control-button--reject" onClick={() => onAction("reject")} disabled={loading !== null}>{loading === "reject" ? "REJECTING" : "REJECT"}</button></div>}
       {status === "approved" && <div className="experiment-control__actions"><button type="button" className="phase-button" onClick={() => onAction("run")} disabled={loading !== null}>{loading === "run" ? "RUNNING EXPERIMENT" : "RUN EXPERIMENT →"}</button></div>}

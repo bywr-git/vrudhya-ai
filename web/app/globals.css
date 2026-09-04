@@ -278,3 +278,19 @@ h1 { margin: 0; font-size: clamp(48px, 7vw, 94px); line-height: .9; letter-spaci
 .growth-dna-list p { max-width: 700px; margin: 0; font-size: 13px; line-height: 1.4; }
 .growth-dna-list small { color: var(--muted); font: 9px/1.5 "IBM Plex Mono", "Courier New", monospace; text-align: right; overflow-wrap: anywhere; }
 @media (max-width: 620px) { .phase-panel__result-actions, .learning-panel__header, .growth-dna-panel__header, .growth-dna-list article { align-items: stretch; flex-direction: column; } .phase-panel__result-actions .phase-button { width: 100%; } .growth-dna-list small { text-align: left; } }
+
+.razorpay-marker { margin-top: 16px; border: 1px dashed var(--orange); padding: 9px 10px; color: var(--orange); font: 9px "IBM Plex Mono", "Courier New", monospace; font-weight: 900; }
+.razorpay-marker--dark { color: var(--chartreuse); border-color: var(--chartreuse); }
+.audit-panel { margin-top: 28px; border: var(--line); padding: 20px; background: rgba(17, 17, 17, .04); box-shadow: 5px 5px 0 var(--ink); }
+.audit-panel__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.audit-panel h3 { margin: 9px 0 0; font-size: 24px; text-transform: uppercase; }
+.audit-list { display: grid; gap: 0; margin-top: 18px; border-top: 1px solid var(--hairline); }
+.audit-list article { display: grid; grid-template-columns: 160px minmax(0, 1fr) auto auto; gap: 14px; align-items: center; border-bottom: 1px solid var(--hairline); padding: 12px 0; }
+.audit-list time, .audit-list code { color: var(--muted); font: 9px "IBM Plex Mono", "Courier New", monospace; overflow-wrap: anywhere; }
+.audit-list strong { font: 10px "IBM Plex Mono", "Courier New", monospace; }
+.audit-list p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+.audit-outcome { border: 1px solid var(--ink); padding: 5px 6px; font: 8px "IBM Plex Mono", "Courier New", monospace; font-weight: 900; }
+.audit-outcome--allowed { background: var(--chartreuse); }
+.audit-outcome--approval-required { background: #fff0d8; color: var(--orange); }
+.audit-outcome--denied { background: var(--orange); }
+@media (max-width: 700px) { .audit-list article { grid-template-columns: 1fr auto; } .audit-list time, .audit-list code { grid-column: 1 / -1; } }

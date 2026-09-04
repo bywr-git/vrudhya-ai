@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes_diagnosis import router as diagnosis_router
+from app.api.routes_audit import router as audit_router
 from app.api.routes_experiments import router as experiments_router
 from app.api.routes_execution import router as execution_router
 from app.api.routes_health import router as health_router
@@ -37,6 +38,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(diagnosis_router)
+app.include_router(audit_router)
 app.include_router(experiments_router)
 app.include_router(execution_router)
 app.include_router(health_router)

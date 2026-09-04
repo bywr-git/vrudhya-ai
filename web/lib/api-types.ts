@@ -23,3 +23,4 @@ export type GrowthDnaEntry = { id: string; merchant_id: string; kind: string; ke
 export type AgentLoopResponse = { learning: LearningResponse; next_opportunity_id: string | null; next_stage: string };
 export type ExperimentResult = { id: string; merchant_id: string; experiment_id: string; claim_type: "measured" | "supported" | "rejected" | "inconclusive"; primary_delta: string | null; guardrail_breaches: Record<string, unknown> | null; method: string; notes: string | null; created_at: string };
 export type GrowthDNA = { id: string; merchant_id: string; kind: string; key: string; body: Record<string, unknown>; evidence_experiment_id: string | null; active: boolean; actor: string | null; created_at: string; updated_at: string };
+export type AuditLog = { id: string; actor: string; merchant_id: string; action: string; target: Record<string, unknown>; timestamp: string; idempotency_key: string; result: string; permission_outcome: string; kill_switch_state: boolean };

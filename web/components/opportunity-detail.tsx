@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { approveExperiment, continueAgentLoop, createExperimentDraft, diagnoseOpportunity, getDiagnosis, getGrowthDna, getHypotheses, getOpportunity, getStrategies, learnFromExperiment, measureExperiment, rejectExperiment, runExperiment } from "@/lib/api-client";
-import type { AgentLoopResponse, Diagnosis, ExperimentDraft, GrowthDnaEntry, Hypothesis, LearningResponse, MeasurementResponse, Opportunity, OpportunityDetail as OpportunityDetailData, Strategy } from "@/lib/api-types";
+import { approveExperiment, continueAgentLoop, createExperimentDraft, diagnoseOpportunity, getAuditLogs, getDiagnosis, getGrowthDna, getHypotheses, getOpportunity, getStrategies, learnFromExperiment, measureExperiment, rejectExperiment, runExperiment } from "@/lib/api-client";
+import type { AgentLoopResponse, AuditLog, Diagnosis, ExperimentDraft, GrowthDnaEntry, Hypothesis, LearningResponse, MeasurementResponse, Opportunity, OpportunityDetail as OpportunityDetailData, Strategy } from "@/lib/api-types";
 import { StatusBadge } from "@/components/status-badge";
 import { DiagnosisPanel } from "@/components/diagnosis-panel";
 import { HypothesisPanel } from "@/components/hypothesis-panel";
@@ -14,6 +14,7 @@ import { ExperimentControlPanel } from "@/components/experiment-control-panel";
 import { ExperimentResultPanel } from "@/components/experiment-result-panel";
 import { LearningPanel } from "@/components/learning-panel";
 import { GrowthDnaPanel } from "@/components/growth-dna-panel";
+import { AuditTrailPanel } from "@/components/audit-trail-panel";
 
 type WorkspaceState = "signal" | "diagnosing" | "diagnosed" | "simulating" | "simulation" | "permission" | "draft" | "approved" | "running" | "measured" | "error";
 
@@ -26,6 +27,7 @@ export function OpportunityDetail({ opportunity, onClose }: { opportunity: Oppor
   const [measurement, setMeasurement] = useState<MeasurementResponse | null>(null);
   const [learning, setLearning] = useState<LearningResponse | null>(null);
   const [growthDna, setGrowthDna] = useState<GrowthDnaEntry[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[] | null>(null);
   const [continuation, setContinuation] = useState<AgentLoopResponse | null>(null);
   const [learningLoading, setLearningLoading] = useState(false);
   const [continuing, setContinuing] = useState(false);
@@ -41,6 +43,7 @@ export function OpportunityDetail({ opportunity, onClose }: { opportunity: Oppor
       if (result) setDetail(result);
       else setError("OPPORTUNITY SIGNAL UNAVAILABLE.");
     });
+    void getAuditLogs().then(setAuditLogs);
     return () => { active = false; };
   }, [opportunity.id]);
 
@@ -123,6 +126,7 @@ export function OpportunityDetail({ opportunity, onClose }: { opportunity: Oppor
       </div>
       {error && <div className="workspace__error" role="alert">{error}</div>}
       {state === "signal" || state === "error" ? <div className="workspace__action-row"><p>Review the persisted detector evidence before reasoning about possible causes.</p><button type="button" className="diagnose-button" onClick={diagnose}>DIAGNOSE SIGNAL →</button></div> : state === "diagnosing" ? <div className="analyzing-state" role="status"><span className="analyzing-state__mark">◌</span><div><strong>ANALYZING SIGNAL</strong><p>Loading persisted diagnosis and research context...</p></div></div> : state === "diagnosed" ? <div className="workspace__panels"><DiagnosisPanel diagnosis={diagnosis!} /><HypothesisPanel hypotheses={hypotheses} /><StrategyPanel strategies={strategies} onSimulate={simulate} simulatingStrategyId={simulatingStrategyId} /></div> : state === "simulating" ? <div className="analyzing-state" role="status"><span className="analyzing-state__mark">◌</span><div><strong>RUNNING SIMULATION</strong><p>Persisted assumptions are being evaluated by the backend.</p></div></div> : draft ? <div className="phase-stack"><SimulationPanel simulation={draft.simulation} />{state === "simulation" && <button type="button" className="phase-button phase-button--wide" onClick={() => setState("permission")}>CHECK PERMISSION →</button>}{["permission", "draft", "approved", "running", "measured"].includes(state) && <PermissionPanel permission={draft.permission} onContinue={() => setState("draft")} />}{["draft", "approved", "running", "measured"].includes(state) && draft.experiment && <><ExperimentDraftPanel experiment={draft.experiment} /><ExperimentControlPanel experiment={draft.experiment} loading={actionLoading} onAction={experimentAction} error={error} /></>}{state === "measured" && measurement && <><ExperimentResultPanel result={measurement} onLearn={learn} learning={learningLoading} />{learning && <LearningPanel learning={learning} dna={growthDna.find((entry) => entry.id === learning.growth_dna_id) ?? null} continuing={continuing} continuation={continuation} onContinue={continueLearning} />}<GrowthDnaPanel entries={growthDna} /></>}</div> : null}
+      <AuditTrailPanel logs={auditLogs} />
     </section>
   );
 }
