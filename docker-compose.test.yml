@@ -1,0 +1,10 @@
+services:
+  tests:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile.test
+    environment:
+      TEST_DATABASE_URL: postgresql+asyncpg://vrudhya:vrudhya@postgres:5432/vrudhya_test
+    depends_on:
+      postgres:
+        condition: service_healthy

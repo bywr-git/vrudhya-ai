@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, Numeric, String, Uuid
+from sqlalchemy import ForeignKey, Numeric, String, Uuid, UniqueConstraint
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -12,6 +12,7 @@ from app.models.enums import OpportunityStatus
 
 class Opportunity(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "opportunities"
+    __table_args__ = (UniqueConstraint("merchant_id", "detector_id", "entity_id", name="uq_opportunities_detector_entity"),)
 
     merchant_id: Mapped[UUID] = mapped_column(
         Uuid(as_uuid=True),

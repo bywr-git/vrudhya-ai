@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import DateTime, ForeignKey, Index, String, Uuid
+from sqlalchemy import DateTime, ForeignKey, Index, String, Uuid, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -14,6 +14,7 @@ from app.db.base import Base, CreatedAtMixin, UUIDPrimaryKeyMixin
 class Event(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     __tablename__ = "events"
     __table_args__ = (
+        UniqueConstraint("merchant_id", "client_event_id", name="uq_events_merchant_client_event"),
         Index("ix_events_merchant_occurred", "merchant_id", "occurred_at"),
         Index("ix_events_merchant_type_occurred", "merchant_id", "event_type", "occurred_at"),
         Index("ix_events_merchant_product_occurred", "merchant_id", "product_id", "occurred_at"),
@@ -37,6 +38,7 @@ class Event(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         nullable=True,
     )
     visitor_key: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    client_event_id: Mapped[UUID] = mapped_column(Uuid(as_uuid=True), nullable=False)
     event_type: Mapped[str] = mapped_column(String(64), nullable=False)
     occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     order_id: Mapped[UUID | None] = mapped_column(

@@ -3,6 +3,7 @@ from app.models.audit import AuditLog
 from app.models.commerce import Order, OrderItem, Payment
 from app.models.customer import Customer
 from app.models.event import Event
+from app.models.events_daily import EventDaily
 from app.models.experiment import (
     Experiment,
     ExperimentAssignment,
@@ -24,6 +25,7 @@ __all__ = [
     "AuditLog",
     "Customer",
     "Event",
+    "EventDaily",
     "Experiment",
     "ExperimentAssignment",
     "ExperimentObservation",

@@ -13,6 +13,10 @@ from app.db.base import Base, CreatedAtMixin, UUIDPrimaryKeyMixin
 class FactSnapshot(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     __tablename__ = "fact_snapshots"
 
+    @property
+    def fact_id(self) -> UUID:
+        return self.id
+
     merchant_id: Mapped[UUID] = mapped_column(
         Uuid(as_uuid=True),
         ForeignKey("merchants.id", ondelete="CASCADE"),

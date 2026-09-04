@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: vrudhya
       POSTGRES_DB: vrudhya
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - vrudhya_pgdata:/var/lib/postgresql/data
       - ./scripts/init-postgres.sql:/docker-entrypoint-initdb.d/init-postgres.sql

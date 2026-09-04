@@ -83,6 +83,7 @@ class TenantAccess:
     async def create_event(
         self,
         *,
+        event_id: UUID,
         event_type: str,
         occurred_at,
         product_id: UUID | None = None,
@@ -91,10 +92,10 @@ class TenantAccess:
         order_id: UUID | None = None,
         payment_id: UUID | None = None,
         metadata: dict | None = None,
-        event_id: UUID | None = None,
     ) -> Event:
         event = Event(
             merchant_id=self._merchant_id,
+            client_event_id=event_id,
             event_type=event_type,
             occurred_at=occurred_at,
             product_id=product_id,
@@ -104,8 +105,6 @@ class TenantAccess:
             payment_id=payment_id,
             event_metadata=metadata,
         )
-        if event_id is not None:
-            event.id = event_id
         self._session.add(event)
         await self._session.flush()
         return event
