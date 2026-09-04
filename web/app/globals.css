@@ -219,3 +219,34 @@ h1 { margin: 0; font-size: clamp(48px, 7vw, 94px); line-height: .9; letter-spaci
 .next-phase-button--active { background: var(--chartreuse); color: var(--ink); cursor: pointer; }
 .next-phase-button--active:hover { transform: translate(2px, 2px); }
 @media (max-width: 700px) { .phase-stack { padding: 16px; } .simulation-values, .draft-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .draft-descriptions { grid-template-columns: 1fr; } .phase-panel__header { flex-direction: column; } .phase-chip { align-self: flex-start; } }
+
+.experiment-control { border: var(--line); padding: 20px; background: var(--ink); color: var(--paper); box-shadow: 5px 5px 0 var(--violet); }
+.experiment-control__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.experiment-control h3 { margin: 9px 0 0; font-size: 24px; text-transform: uppercase; }
+.experiment-control .intel-label { color: var(--chartreuse); }
+.experiment-control .status-badge { color: var(--ink); }
+.experiment-control__actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+.control-button { border: var(--line); padding: 13px 16px; cursor: pointer; font: 11px "IBM Plex Mono", "Courier New", monospace; font-weight: 900; }
+.control-button--reject { background: transparent; color: var(--paper); border-color: var(--paper); }
+.control-button--reject:hover { background: var(--orange); color: var(--ink); border-color: var(--ink); }
+.experiment-control__error { border-left: 5px solid var(--orange); padding: 10px 12px; background: #fff0d8; color: var(--ink); font: 10px/1.4 "IBM Plex Mono", "Courier New", monospace; }
+.control-state { border: 2px solid var(--chartreuse); padding: 11px 13px; color: var(--chartreuse); font: 10px "IBM Plex Mono", "Courier New", monospace; font-weight: 900; }
+.control-state--warning { border-color: var(--orange); color: var(--orange); }
+.control-state--complete { border-color: var(--chartreuse); color: var(--chartreuse); }
+.experiment-result { border: var(--line); padding: 22px; background: var(--chartreuse); color: var(--ink); box-shadow: 6px 6px 0 var(--ink); }
+.experiment-result__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.experiment-result h3 { margin: 10px 0 0; font-size: 28px; text-transform: uppercase; }
+.experiment-result .intel-label { color: var(--violet-deep); }
+.phase-chip--measured { background: var(--ink); color: var(--paper); }
+.experiment-result__primary { margin-top: 25px; border-top: 2px solid var(--ink); padding-top: 15px; }
+.result-values { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 12px; }
+.result-values div { padding: 15px; background: rgba(243, 240, 232, .62); border: 2px solid var(--ink); }
+.result-values span, .result-deltas span, .result-guardrails span { display: block; font: 9px "IBM Plex Mono", "Courier New", monospace; font-weight: 900; }
+.result-values strong { display: block; margin-top: 9px; font-size: 31px; line-height: 1; }
+.result-deltas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 14px; }
+.result-deltas div { border-top: 2px solid var(--ink); padding-top: 12px; }
+.result-deltas strong { display: block; margin-top: 7px; font-size: 23px; }
+.result-guardrails { display: flex; flex-wrap: wrap; gap: 9px 17px; align-items: center; margin-top: 18px; border-top: 1px solid rgba(17, 17, 17, .35); padding-top: 13px; font: 10px "IBM Plex Mono", "Courier New", monospace; }
+.result-guardrails > span:not(.intel-label) { font-weight: 900; }
+.phase-panel__disclaimer--measured { border-color: var(--ink); color: var(--ink); }
+@media (max-width: 620px) { .experiment-control__header, .experiment-result__header { flex-direction: column; } .result-values, .result-deltas { grid-template-columns: 1fr; } .experiment-control__actions { align-items: stretch; flex-direction: column; } .experiment-control__actions > * { width: 100%; text-align: center; } }
