@@ -1,4 +1,4 @@
-import type { Opportunity, OpportunityDetail } from "@/lib/api-types";
+import type { Diagnosis, ExperimentDraft, HypothesesResponse, Opportunity, OpportunityDetail, StrategiesResponse } from "@/lib/api-types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
@@ -12,5 +12,20 @@ async function get<T>(path: string): Promise<T | null> {
   }
 }
 
+async function post<T>(path: string): Promise<T | null> {
+  try {
+    const response = await fetch(`${API_BASE_URL}${path}`, { method: "POST", headers: { Accept: "application/json" }, cache: "no-store" });
+    if (!response.ok) return null;
+    return (await response.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
 export function getOpportunities() { return get<Opportunity[]>("/v1/opportunities"); }
 export function getOpportunity(id: string) { return get<OpportunityDetail>(`/v1/opportunities/${encodeURIComponent(id)}`); }
+export function diagnoseOpportunity(id: string) { return post<Record<string, unknown>>(`/v1/opportunities/${encodeURIComponent(id)}/diagnose`); }
+export function getDiagnosis(id: string) { return get<Diagnosis>(`/v1/opportunities/${encodeURIComponent(id)}/diagnosis`); }
+export function getHypotheses(id: string) { return get<HypothesesResponse>(`/v1/opportunities/${encodeURIComponent(id)}/hypotheses`); }
+export function getStrategies(id: string) { return get<StrategiesResponse>(`/v1/opportunities/${encodeURIComponent(id)}/strategies`); }
+export function createExperimentDraft(strategyId: string) { return post<ExperimentDraft>(`/v1/experiments/draft/${encodeURIComponent(strategyId)}`); }
