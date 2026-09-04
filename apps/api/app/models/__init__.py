@@ -1,4 +1,5 @@
 from app.models.agent import AgentMessage, AgentRun, Hypothesis, Strategy, ToolCall
+from app.models.diagnosis import Diagnosis
 from app.models.audit import AuditLog
 from app.models.commerce import Order, OrderItem, Payment
 from app.models.customer import Customer
