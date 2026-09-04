@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { approveExperiment, createExperimentDraft, diagnoseOpportunity, getDiagnosis, getHypotheses, getOpportunity, getStrategies, measureExperiment, rejectExperiment, runExperiment } from "@/lib/api-client";
-import type { Diagnosis, ExperimentDraft, Hypothesis, MeasurementResponse, Opportunity, OpportunityDetail as OpportunityDetailData, Strategy } from "@/lib/api-types";
+import { approveExperiment, continueAgentLoop, createExperimentDraft, diagnoseOpportunity, getDiagnosis, getGrowthDna, getHypotheses, getOpportunity, getStrategies, learnFromExperiment, measureExperiment, rejectExperiment, runExperiment } from "@/lib/api-client";
+import type { AgentLoopResponse, Diagnosis, ExperimentDraft, GrowthDnaEntry, Hypothesis, LearningResponse, MeasurementResponse, Opportunity, OpportunityDetail as OpportunityDetailData, Strategy } from "@/lib/api-types";
 import { StatusBadge } from "@/components/status-badge";
 import { DiagnosisPanel } from "@/components/diagnosis-panel";
 import { HypothesisPanel } from "@/components/hypothesis-panel";
@@ -12,6 +12,8 @@ import { PermissionPanel } from "@/components/permission-panel";
 import { ExperimentDraftPanel } from "@/components/experiment-draft-panel";
 import { ExperimentControlPanel } from "@/components/experiment-control-panel";
 import { ExperimentResultPanel } from "@/components/experiment-result-panel";
+import { LearningPanel } from "@/components/learning-panel";
+import { GrowthDnaPanel } from "@/components/growth-dna-panel";
 
 type WorkspaceState = "signal" | "diagnosing" | "diagnosed" | "simulating" | "simulation" | "permission" | "draft" | "approved" | "running" | "measured" | "error";
 
@@ -22,6 +24,11 @@ export function OpportunityDetail({ opportunity, onClose }: { opportunity: Oppor
   const [strategies, setStrategies] = useState<Strategy[]>([]);
   const [draft, setDraft] = useState<ExperimentDraft | null>(null);
   const [measurement, setMeasurement] = useState<MeasurementResponse | null>(null);
+  const [learning, setLearning] = useState<LearningResponse | null>(null);
+  const [growthDna, setGrowthDna] = useState<GrowthDnaEntry[]>([]);
+  const [continuation, setContinuation] = useState<AgentLoopResponse | null>(null);
+  const [learningLoading, setLearningLoading] = useState(false);
+  const [continuing, setContinuing] = useState(false);
   const [simulatingStrategyId, setSimulatingStrategyId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<"approve" | "reject" | "run" | "measure" | null>(null);
   const [state, setState] = useState<WorkspaceState>("signal");
@@ -82,6 +89,30 @@ export function OpportunityDetail({ opportunity, onClose }: { opportunity: Oppor
     setState(status === "approved" ? "approved" : status === "running" ? "running" : "draft");
   }
 
+  async function learn() {
+    if (!draft?.experiment || !measurement) return;
+    setLearningLoading(true);
+    setError(null);
+    const result = await learnFromExperiment(draft.experiment.id);
+    setLearningLoading(false);
+    if (!result) { setError("LEARNING FAILED — THE MEASURED RESULT COULD NOT BE LEARNED."); return; }
+    setLearning(result);
+    const entries = await getGrowthDna();
+    if (entries) setGrowthDna(entries);
+  }
+
+  async function continueLearning() {
+    if (!draft?.experiment) return;
+    setContinuing(true);
+    setError(null);
+    const result = await continueAgentLoop(draft.experiment.id);
+    setContinuing(false);
+    if (!result) { setError("CONTINUATION FAILED — THE BACKEND DID NOT CONFIRM THE NEXT STEP."); return; }
+    setContinuation(result);
+    const entries = await getGrowthDna();
+    if (entries) setGrowthDna(entries);
+  }
+
   return (
     <section className="intelligence-workspace" aria-labelledby="workspace-title">
       <div className="workspace__top"><div><span className="card__meta">OPPORTUNITY_{opportunity.id.slice(0, 6).toUpperCase()}</span><h2 id="workspace-title">Signal investigation</h2></div><button type="button" className="workspace__close" onClick={onClose} aria-label="Close opportunity workspace">CLOSE ×</button></div>
@@ -91,7 +122,7 @@ export function OpportunityDetail({ opportunity, onClose }: { opportunity: Oppor
         <div className="workspace__evidence"><span className="intel-label">OBSERVED / EVIDENCE</span><strong>{detail?.evidence.length ?? opportunity.evidence_fact_ids.length}</strong><p>Persisted FactSnapshot references</p></div>
       </div>
       {error && <div className="workspace__error" role="alert">{error}</div>}
-      {state === "signal" || state === "error" ? <div className="workspace__action-row"><p>Review the persisted detector evidence before reasoning about possible causes.</p><button type="button" className="diagnose-button" onClick={diagnose}>DIAGNOSE SIGNAL →</button></div> : state === "diagnosing" ? <div className="analyzing-state" role="status"><span className="analyzing-state__mark">◌</span><div><strong>ANALYZING SIGNAL</strong><p>Loading persisted diagnosis and research context...</p></div></div> : state === "diagnosed" ? <div className="workspace__panels"><DiagnosisPanel diagnosis={diagnosis!} /><HypothesisPanel hypotheses={hypotheses} /><StrategyPanel strategies={strategies} onSimulate={simulate} simulatingStrategyId={simulatingStrategyId} /></div> : state === "simulating" ? <div className="analyzing-state" role="status"><span className="analyzing-state__mark">◌</span><div><strong>RUNNING SIMULATION</strong><p>Persisted assumptions are being evaluated by the backend.</p></div></div> : draft ? <div className="phase-stack"><SimulationPanel simulation={draft.simulation} />{state === "simulation" && <button type="button" className="phase-button phase-button--wide" onClick={() => setState("permission")}>CHECK PERMISSION →</button>}{["permission", "draft", "approved", "running", "measured"].includes(state) && <PermissionPanel permission={draft.permission} onContinue={() => setState("draft")} />}{["draft", "approved", "running", "measured"].includes(state) && draft.experiment && <><ExperimentDraftPanel experiment={draft.experiment} /><ExperimentControlPanel experiment={draft.experiment} loading={actionLoading} onAction={experimentAction} error={error} /></>}{state === "measured" && measurement && <ExperimentResultPanel result={measurement} />}</div> : null}
+      {state === "signal" || state === "error" ? <div className="workspace__action-row"><p>Review the persisted detector evidence before reasoning about possible causes.</p><button type="button" className="diagnose-button" onClick={diagnose}>DIAGNOSE SIGNAL →</button></div> : state === "diagnosing" ? <div className="analyzing-state" role="status"><span className="analyzing-state__mark">◌</span><div><strong>ANALYZING SIGNAL</strong><p>Loading persisted diagnosis and research context...</p></div></div> : state === "diagnosed" ? <div className="workspace__panels"><DiagnosisPanel diagnosis={diagnosis!} /><HypothesisPanel hypotheses={hypotheses} /><StrategyPanel strategies={strategies} onSimulate={simulate} simulatingStrategyId={simulatingStrategyId} /></div> : state === "simulating" ? <div className="analyzing-state" role="status"><span className="analyzing-state__mark">◌</span><div><strong>RUNNING SIMULATION</strong><p>Persisted assumptions are being evaluated by the backend.</p></div></div> : draft ? <div className="phase-stack"><SimulationPanel simulation={draft.simulation} />{state === "simulation" && <button type="button" className="phase-button phase-button--wide" onClick={() => setState("permission")}>CHECK PERMISSION →</button>}{["permission", "draft", "approved", "running", "measured"].includes(state) && <PermissionPanel permission={draft.permission} onContinue={() => setState("draft")} />}{["draft", "approved", "running", "measured"].includes(state) && draft.experiment && <><ExperimentDraftPanel experiment={draft.experiment} /><ExperimentControlPanel experiment={draft.experiment} loading={actionLoading} onAction={experimentAction} error={error} /></>}{state === "measured" && measurement && <><ExperimentResultPanel result={measurement} onLearn={learn} learning={learningLoading} />{learning && <LearningPanel learning={learning} dna={growthDna.find((entry) => entry.id === learning.growth_dna_id) ?? null} continuing={continuing} continuation={continuation} onContinue={continueLearning} />}<GrowthDnaPanel entries={growthDna} /></>}</div> : null}
     </section>
   );
 }

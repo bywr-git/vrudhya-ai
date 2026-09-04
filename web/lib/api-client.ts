@@ -1,4 +1,4 @@
-import type { Diagnosis, ExecutionResponse, ExperimentDraft, HypothesesResponse, MeasurementResponse, Opportunity, OpportunityDetail, RunResponse, StrategiesResponse } from "@/lib/api-types";
+import type { AgentLoopResponse, Diagnosis, ExecutionResponse, ExperimentDraft, GrowthDnaEntry, HypothesesResponse, LearningResponse, MeasurementResponse, Opportunity, OpportunityDetail, RunResponse, StrategiesResponse } from "@/lib/api-types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
@@ -33,3 +33,6 @@ export function approveExperiment(id: string) { return post<ExecutionResponse>(`
 export function rejectExperiment(id: string) { return post<ExecutionResponse>(`/v1/experiments/${encodeURIComponent(id)}/reject`); }
 export function runExperiment(id: string) { return post<RunResponse>(`/v1/experiments/${encodeURIComponent(id)}/run`); }
 export function measureExperiment(id: string) { return post<MeasurementResponse>(`/v1/experiments/${encodeURIComponent(id)}/measure`); }
+export function learnFromExperiment(id: string) { return post<LearningResponse>(`/v1/learning/experiments/${encodeURIComponent(id)}/learn`); }
+export function continueAgentLoop(id: string) { return post<AgentLoopResponse>(`/v1/learning/experiments/${encodeURIComponent(id)}/continue`); }
+export function getGrowthDna() { return get<GrowthDnaEntry[]>("/v1/learning/growth-dna"); }
