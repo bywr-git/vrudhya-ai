@@ -1,4 +1,5 @@
 import { GrowthRadar } from "@/components/growth-radar";
+import { MetricCard } from "@/components/metric-card";
 import { getOpportunities } from "@/lib/api-client";
 
 export default async function HomePage() {
@@ -15,8 +16,8 @@ export default async function HomePage() {
           <p className="lede">Find what grows. Prove what works.</p>
         </div>
         <div className="system-status" aria-label="System status: observing">
-          <span className="status-dot" aria-hidden="true" />
-          <span>SYSTEM OBSERVING</span>
+          <div className="system-status__top"><span className="radar-scan" aria-hidden="true"><i /></span><span>SYSTEM OBSERVING</span></div>
+          <div className="system-status__readout"><strong>{isLive ? opportunities.length.toString().padStart(2, "0") : "12"}</strong><span>FACTS</span><strong>{isLive ? "01" : "01"}</strong><span>SIGNAL</span></div>
           <small>{isLive ? "LIVE API" : "DEMO VIEW"}</small>
         </div>
       </header>
@@ -29,10 +30,10 @@ export default async function HomePage() {
       )}
 
       <section className="metric-grid reveal reveal--two" aria-label="Growth overview">
-        <div className="metric-grid__item metric-grid__item--cyan"><span>REVENUE</span><strong>₹—</strong><small>AWAITING AGGREGATE API</small></div>
-        <div className="metric-grid__item metric-grid__item--pink"><span>OPPORTUNITIES</span><strong>{isLive ? String(opportunities.length).padStart(2, "0") : "04"}</strong><small>{isLive ? "PERSISTED RADAR" : "DEMO PRESENTATION"}</small></div>
-        <div className="metric-grid__item metric-grid__item--lime"><span>EXPERIMENTS</span><strong>—</strong><small>NO LIST API YET</small></div>
-        <div className="metric-grid__item metric-grid__item--yellow"><span>LEARNINGS</span><strong>—</strong><small>NO SUMMARY API YET</small></div>
+        <MetricCard label="REVENUE" value="₹—" detail="AWAITING AGGREGATE API" tone="paper" motif="signal" />
+        <MetricCard label="OPPORTUNITIES" value={isLive ? String(opportunities.length).padStart(2, "0") : "04"} detail={isLive ? "PERSISTED RADAR" : "DEMO PRESENTATION"} tone="violet" motif="radar" />
+        <MetricCard label="EXPERIMENTS" value="—" detail="NO LIST API YET" tone="chartreuse" motif="nodes" />
+        <MetricCard label="LEARNINGS" value="—" detail="NO SUMMARY API YET" tone="orange" motif="branch" />
       </section>
 
       <GrowthRadar opportunities={opportunities} isLive={isLive} />

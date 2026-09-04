@@ -12,7 +12,7 @@ export function Navigation() {
   return (
     <aside className="sidebar" aria-label="Primary navigation">
       <div className="brand">
-        <span className="brand__mark" aria-hidden="true">V/</span>
+        <span className="brand__mark" aria-hidden="true"><i /><b /></span>
         <div>
           <h2>VRUDHYA.AI</h2>
           <p>GROWTH SCIENTIST / V1.0</p>
