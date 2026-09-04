@@ -3,6 +3,7 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes_diagnosis import router as diagnosis_router
 from app.api.routes_experiments import router as experiments_router
@@ -27,6 +28,13 @@ app = FastAPI(
     title="Vrudhya.ai API",
     version="0.1.0",
     lifespan=lifespan,
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:3001"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
 )
 app.include_router(diagnosis_router)
 app.include_router(experiments_router)

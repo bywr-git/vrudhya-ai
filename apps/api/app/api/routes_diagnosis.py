@@ -48,6 +48,8 @@ async def diagnose(
             hypothesis_id=hypothesis.id,
         )
 
+        await session.commit()
+
         return {
             "diagnosis": DiagnosisOut.model_validate(diagnosis),
             "hypothesis": HypothesisOut.model_validate(hypothesis),
